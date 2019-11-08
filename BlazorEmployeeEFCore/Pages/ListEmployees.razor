@@ -1,0 +1,55 @@
+﻿@using BlazorEmployeeEFCore.Data
+
+@page "/listemployees"
+
+@inject CustomHttpClient Http
+@inject AppSettingsService AppSettingsService
+
+<h2>Employee Details</h2>
+<p>
+    <a href="/addemployee">Create New Employee</a>
+</p>
+@if (employees == null)
+{
+    <img src="./basicloader.gif" />
+}
+else
+{
+    <table class='table'>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Designation</th>
+                <th>Company</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employee in employees)
+            {
+                <tr>
+                    <td>@employee.Name</td>
+                    <td>@employee.Department</td>
+                    <td>@employee.Designation</td>
+                    <td>@employee.Company</td>
+                    <td>
+                        <a href='/editemployee/@employee.Id'>Edit</a>
+                        <a href='/deleteemployee/@employee.Id'>Delete</a>
+                    </td>
+                </tr>
+
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    Employee[] employees;
+    string baseUrl;
+
+    protected override async Task OnInitializedAsync()
+    {
+        baseUrl = AppSettingsService.GetBaseUrl();
+        employees = await Http.GetJsonAsync<Employee[]>(baseUrl + "/api/employees/get");
+    }
+}   
